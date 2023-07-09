@@ -3,6 +3,8 @@ import Home from '../pages/Home.vue';
 import Notifications from '../pages/Notifications.vue';
 import Messages from '../pages/Messages.vue';
 import Profile from '../pages/Profile.vue';
+import Login from '../pages/Login.vue';
+import Register from '../pages/Register.vue';
 
 const routes = [
 	{
@@ -11,6 +13,10 @@ const routes = [
 		title: '홈',
 		icon: ['fas', 'house-chimney'],
 		component: Home,
+		meta: {
+			isMenu: true,
+			layout: 'DefaultLayout',
+		},
 	},
 	{
 		path: '/',
@@ -18,6 +24,10 @@ const routes = [
 		title: '탐색하기',
 		icon: ['fas', 'hashtag'],
 		component: Home,
+		meta: {
+			isMenu: true,
+			layout: 'DefaultLayout',
+		},
 	},
 	{
 		path: '/notification',
@@ -25,6 +35,10 @@ const routes = [
 		title: '알림',
 		icon: ['fas', 'bell'],
 		component: Notifications,
+		meta: {
+			isMenu: true,
+			layout: 'DefaultLayout',
+		},
 	},
 	{
 		path: '/messages',
@@ -32,6 +46,10 @@ const routes = [
 		title: '쪽지',
 		icon: ['fas', 'envelope'],
 		component: Messages,
+		meta: {
+			isMenu: true,
+			layout: 'DefaultLayout',
+		},
 	},
 	{
 		path: '/',
@@ -39,6 +57,10 @@ const routes = [
 		title: '북마크',
 		icon: ['fas', 'bookmark'],
 		component: Home,
+		meta: {
+			isMenu: true,
+			layout: 'DefaultLayout',
+		},
 	},
 	{
 		path: '/',
@@ -46,6 +68,10 @@ const routes = [
 		title: '리스트',
 		icon: ['fas', 'list-alt'],
 		component: Home,
+		meta: {
+			isMenu: true,
+			layout: 'DefaultLayout',
+		},
 	},
 	{
 		path: '/profile',
@@ -53,6 +79,10 @@ const routes = [
 		title: '프로필',
 		icon: ['fas', 'user'],
 		component: Profile,
+		meta: {
+			isMenu: true,
+			layout: 'DefaultLayout',
+		},
 	},
 	{
 		path: '/',
@@ -60,6 +90,30 @@ const routes = [
 		title: '더보기',
 		icon: ['fas', 'ellipsis-h'],
 		component: Home,
+		meta: {
+			isMenu: true,
+			layout: 'DefaultLayout',
+		},
+	},
+	{
+		path: '/register',
+		name: 'register',
+		icon: ['fas', 'dove'],
+		component: Register,
+		meta: {
+			isMenu: false,
+			layout: 'EmptyLayout',
+		},
+	},
+	{
+		path: '/login',
+		name: 'login',
+		icon: ['fas', 'dove'],
+		component: Login,
+		meta: {
+			isMenu: false,
+			layout: 'EmptyLayout',
+		},
 	},
 ];
 
