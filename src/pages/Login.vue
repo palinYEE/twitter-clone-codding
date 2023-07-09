@@ -13,12 +13,17 @@
 			placeholder="이메일"
 		/>
 		<input
+			@keyup.enter="onLogin"
 			v-model="password"
-			type="text"
+			type="password"
 			class="w-96 px-4 py-3 border rounded border-gray-300 focus:ring-2 focus:border-primary focus:outline-none"
 			placeholder="비밀번호"
 		/>
+		<button v-if="loading" class="w-96 rounded bg-light text-white py-3">
+			로그인 중입니다.
+		</button>
 		<button
+			v-else
 			class="w-96 rounded bg-primary text-white py-3 hover:bg-dark"
 			@click="onLogin"
 		>
@@ -32,8 +37,11 @@
 
 <script setup>
 import { onBeforeMount, ref } from 'vue';
-import { useRouter } from 'vue-router';
 import router from '../router';
+import { auth, db } from '../firebase';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore';
+import store from '../store';
 
 // 반응형 상수 선언
 const route = ref({});
@@ -42,11 +50,44 @@ const password = ref('');
 const loading = ref(false);
 
 // 회원가입 창으로 이동
-const vueRouter = useRouter();
-const goRegister = () => vueRouter.push({ name: 'register' });
+const goRegister = () => router.push({ name: 'register' });
 
-const onLogin = () => {
-	loading.value = true;
+const onLogin = async () => {
+	if (!email.value || !password.value) {
+		alert('이메일, 비밀번호를 모두 입력해주세요');
+		return;
+	}
+	try {
+		loading.value = true;
+		const { user } = await signInWithEmailAndPassword(
+			auth,
+			email.value,
+			password.value,
+		);
+
+		// get user info
+		const docData = await getDoc(doc(db, 'users', user.uid));
+		store.commit('SET_USER', docData.data());
+		router.replace({ name: 'home' });
+	} catch (error) {
+		let message = error.message;
+		switch (error.code) {
+			case 'auth/invalid-email':
+				message = '잘못된 이메일 형식입니다.';
+				break;
+			case 'auth/wrong-password':
+				message = '비밀번호가 틀립니다.';
+				break;
+			case 'auth/user-not-found':
+				message = '등록되지 않는 이메일입니다.';
+				break;
+			default:
+				break;
+		}
+		alert(message);
+	} finally {
+		loading.value = false;
+	}
 };
 
 onBeforeMount(

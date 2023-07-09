@@ -1,5 +1,5 @@
 <template>
-	<div class="flex h-screen container mx-auto">
+	<div class="flex h-screen container mx-auto relative">
 		<!-- side section -->
 		<div
 			class="w-20 xl:w-1/4 pt-5 xl:ml-10 flex flex-col justify-between border-r border-gray-200"
@@ -45,7 +45,10 @@
 				</div>
 			</div>
 			<!-- profile button -->
-			<div class="xl:pr-3 mb-3">
+			<div
+				class="xl:pr-3 mb-3 relative"
+				@click="showProfileDropDown = !showProfileDropDown"
+			>
 				<button
 					class="hidden xl:flex mt-3 px-2 py-1 w-full h-12 rounded-full hover:bg-blue-50 items-center"
 				>
@@ -71,6 +74,31 @@
 		<div class="flex-1 flex h-screen">
 			<router-view></router-view>
 		</div>
+		<!-- profile dropdown menu -->
+		<div
+			class="absolute bottom-20 left-12 shadow rounded-lg w-60 bg-white"
+			v-if="showProfileDropDown"
+		>
+			<button
+				class="hover:bg-gray-50 border-b border-gray-100 flex p-3 w-full items-center"
+			>
+				<img src="http://picsum.photos/200" class="w-10 h-10 rounded-full" />
+				<div class="ml-2">
+					<div class="font-bold text-sm">alwns28@test.com</div>
+					<div class="text-left text-sm text-gray-500">@test</div>
+				</div>
+				<font-awesome-icon
+					icon="check"
+					class="text-primary ml-auto"
+				></font-awesome-icon>
+			</button>
+			<button
+				class="p-3 hover:bg-gray-50 w-full text-left text-sm"
+				@click="onLogout"
+			>
+				@alwns28 계정에서 로그아웃
+			</button>
+		</div>
 	</div>
 </template>
 
@@ -78,11 +106,22 @@
 import { ref, onBeforeMount } from 'vue';
 import router from '../router';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import store from '../store';
+import { auth } from '../firebase';
+import { signOut } from 'firebase/auth';
 
 const routes = ref([]);
 onBeforeMount(() => {
 	routes.value = router.options.routes;
 });
+
+const showProfileDropDown = ref(false);
+
+const onLogout = async () => {
+	await signOut(auth);
+	store.commit('SET_USER', null);
+	await router.replace({ name: 'login' });
+};
 </script>
 
 <style lang="scss" scoped></style>
