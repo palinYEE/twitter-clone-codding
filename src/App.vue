@@ -12,79 +12,22 @@
 				></font-awesome-icon>
 				<!-- flex-col 하면 세로로 쌓인다. -->
 				<!-- side menu icons -->
+				<!-- side menu v-for 을 이용하여 공통화 -->
 				<div class="flex flex-col items-start space-y-1">
-					<div
+					<router-link
 						class="hover:text-primary hover:bg-blue-50 px-4 py-2 rounded-full cursor-pointer"
+						v-for="route in routes"
+						:key="route.name"
+						:to="{ name: route.name }"
 					>
 						<font-awesome-icon
-							:icon="['fas', 'house-chimney']"
+							:icon="route.icon"
 							class="text-2xl fa-fw"
 						></font-awesome-icon>
-						<span class="ml-5 text-xl hidden xl:inline-block">홈</span>
-					</div>
-					<div
-						class="hover:text-primary hover:bg-blue-50 px-4 py-2 rounded-full cursor-pointer"
-					>
-						<font-awesome-icon
-							icon="hashtag"
-							class="text-2xl fa-fw"
-						></font-awesome-icon>
-						<span class="ml-5 text-xl hidden xl:inline-block">탐색하기</span>
-					</div>
-					<div
-						class="hover:text-primary hover:bg-blue-50 px-4 py-2 rounded-full cursor-pointer"
-					>
-						<font-awesome-icon
-							icon="bell"
-							class="text-2xl fa-fw"
-						></font-awesome-icon>
-						<span class="ml-5 text-xl hidden xl:inline-block">알림</span>
-					</div>
-					<div
-						class="hover:text-primary hover:bg-blue-50 px-4 py-2 rounded-full cursor-pointer"
-					>
-						<font-awesome-icon
-							:icon="['fas', 'envelope']"
-							class="text-2xl fa-fw"
-						></font-awesome-icon>
-						<span class="ml-5 text-xl hidden xl:inline-block">쪽지</span>
-					</div>
-					<div
-						class="hover:text-primary hover:bg-blue-50 px-4 py-2 rounded-full cursor-pointer"
-					>
-						<font-awesome-icon
-							icon="bookmark"
-							class="text-2xl fa-fw"
-						></font-awesome-icon>
-						<span class="ml-5 text-xl hidden xl:inline-block">북마크</span>
-					</div>
-					<div
-						class="hover:text-primary hover:bg-blue-50 px-4 py-2 rounded-full cursor-pointer"
-					>
-						<font-awesome-icon
-							icon="list-alt"
-							class="text-2xl fa-fw"
-						></font-awesome-icon>
-						<span class="ml-5 text-xl hidden xl:inline-block">리스트</span>
-					</div>
-					<div
-						class="hover:text-primary hover:bg-blue-50 px-4 py-2 rounded-full cursor-pointer"
-					>
-						<font-awesome-icon
-							icon="user"
-							class="text-2xl fa-fw"
-						></font-awesome-icon>
-						<span class="ml-5 text-xl hidden xl:inline-block">프로필</span>
-					</div>
-					<div
-						class="hover:text-primary hover:bg-blue-50 px-4 py-2 rounded-full cursor-pointer"
-					>
-						<font-awesome-icon
-							icon="ellipsis-h"
-							class="text-2xl fa-fw"
-						></font-awesome-icon>
-						<span class="ml-5 text-xl hidden xl:inline-block">더보기</span>
-					</div>
+						<span class="ml-5 text-xl hidden xl:inline-block">{{
+							route.title
+						}}</span>
+					</router-link>
 				</div>
 				<!-- tweet button -->
 				<div class="w-full xl:pr-3 flex justify-center">
@@ -123,23 +66,21 @@
 			</div>
 		</div>
 		<!-- main section -->
-		<div class="flex-1">
-			<div class="flex h-screen">
-				<!-- <home /> -->
-				<!-- <notifications></notifications> -->
-				<!-- <messages /> -->
-				<profile />
-			</div>
+		<div class="flex-1 flex h-screen">
+			<router-view></router-view>
 		</div>
 	</div>
 </template>
 
 <script setup>
-// import Home from './pages/Home.vue';
-// import Notifications from './pages/Notifications.vue';
-// import Trands from './components/Trends.vue';
-// import Messages from './pages/Messages.vue';
-import Profile from './pages/Profile.vue';
+import { ref, onBeforeMount } from 'vue';
+import router from './router/';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+
+const routes = ref([]);
+onBeforeMount(() => {
+	routes.value = router.options.routes;
+});
 </script>
 
 <style lang="scss" scoped></style>
