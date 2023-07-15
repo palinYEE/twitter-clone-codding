@@ -70,6 +70,7 @@ const onRegister = async () => {
 		const data = doc(db, `users/${user.uid}`);
 		await setDoc(data, {
 			uid: user.uid,
+			username: username.value,
 			email: email.value,
 			profile_image_url: '/profile.jpeg',
 			num_tweets: 0,
