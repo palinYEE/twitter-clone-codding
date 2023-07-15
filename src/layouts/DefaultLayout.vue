@@ -15,10 +15,15 @@
 				<!-- side menu v-for 을 이용하여 공통화 -->
 				<div class="flex flex-col items-start space-y-1">
 					<router-link
-						class="hover:text-primary hover:bg-blue-50 px-4 py-2 rounded-full cursor-pointer"
+						class="hover:text-primary hover:bg-blue-50 p-2 xl:px-4 xl:py-2 rounded-full cursor-pointer"
 						v-for="route in routes"
 						:key="route.name"
 						:to="{ name: route.name }"
+						:class="
+							router.currentRoute.value.name === route.name
+								? 'text-primary'
+								: ''
+						"
 					>
 						<div v-if="route.meta.isMenu">
 							<font-awesome-icon
@@ -52,10 +57,15 @@
 				<button
 					class="hidden xl:flex mt-3 px-2 py-1 w-full h-12 rounded-full hover:bg-blue-50 items-center"
 				>
-					<img src="" class="w-10 h-10 rounded-full" />
+					<img
+						:src="currentUser.profile_image_url"
+						class="w-10 h-10 rounded-full"
+					/>
 					<div class="xl:ml-2 hidden xl:block">
-						<div class="text-sm font-bold">yjyoon</div>
-						<div class="text-xs text-gray-500 text-left">test</div>
+						<div class="text-sm font-bold">{{ currentUser.email }}</div>
+						<div class="text-xs text-gray-500 text-left">
+							@{{ currentUser.username }}
+						</div>
 					</div>
 					<font-awesome-icon
 						icon="ellipsis-h"
@@ -64,7 +74,7 @@
 				</button>
 				<div class="xl:hidden flex justify-center">
 					<img
-						src=""
+						:src="currentUser.profile_image_url"
 						class="w-10 h-10 rounded-full cursor-pointer hover:opacity-80"
 					/>
 				</div>
@@ -82,9 +92,12 @@
 			<button
 				class="hover:bg-gray-50 border-b border-gray-100 flex p-3 w-full items-center"
 			>
-				<img src="http://picsum.photos/200" class="w-10 h-10 rounded-full" />
+				<img
+					:src="currentUser.profile_image_url"
+					class="w-10 h-10 rounded-full"
+				/>
 				<div class="ml-2">
-					<div class="font-bold text-sm">alwns28@test.com</div>
+					<div class="font-bold text-sm">{{ currentUser.email }}</div>
 					<div class="text-left text-sm text-gray-500">@test</div>
 				</div>
 				<font-awesome-icon
@@ -103,7 +116,7 @@
 </template>
 
 <script setup>
-import { ref, onBeforeMount } from 'vue';
+import { ref, onBeforeMount, computed } from 'vue';
 import router from '../router';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import store from '../store';
@@ -111,8 +124,11 @@ import { auth } from '../firebase';
 import { signOut } from 'firebase/auth';
 
 const routes = ref([]);
+
 onBeforeMount(() => {
-	routes.value = router.options.routes;
+	routes.value = router.options.routes.filter(
+		route => route.meta.isMenu === true,
+	);
 });
 
 const showProfileDropDown = ref(false);
@@ -122,6 +138,8 @@ const onLogout = async () => {
 	store.commit('SET_USER', null);
 	await router.replace({ name: 'login' });
 };
+
+const currentUser = computed(() => store.state.user);
 </script>
 
 <style lang="scss" scoped></style>
