@@ -20,13 +20,18 @@
 			<div>{{ tweet.tweet_body }}</div>
 			<!-- 아이콘들 -->
 			<div class="flex justify-between">
-				<div class="text-gray-500 hover:text-primary">
+				<!-- comment button -->
+				<div
+					class="text-gray-500 hover:text-primary"
+					@click="showCommentModal = true"
+				>
 					<font-awesome-icon
 						:icon="['fas', 'comment']"
 						class="fa-fw hover:bg-blue-50 rounded-full p-2"
 					></font-awesome-icon>
 					<span class="ml-1 text-sm">{{ tweet.num_comments }}</span>
 				</div>
+				<!-- tweet button -->
 				<div class="text-gray-500 hover:text-green-500">
 					<font-awesome-icon
 						:icon="['fas', 'retweet']"
@@ -34,6 +39,7 @@
 					></font-awesome-icon>
 					<span class="ml-1 text-sm">{{ tweet.num_retweets }}</span>
 				</div>
+				<!-- like button -->
 				<div class="text-gray-500 hover:text-red-500">
 					<font-awesome-icon
 						:icon="['fas', 'heart']"
@@ -41,6 +47,7 @@
 					></font-awesome-icon>
 					<span class="ml-1 text-sm">{{ tweet.num_likes }}</span>
 				</div>
+				<!-- share -->
 				<div class="text-gray-500 hover:text-primary">
 					<font-awesome-icon
 						:icon="['fas', 'share-square']"
@@ -50,10 +57,18 @@
 			</div>
 		</div>
 	</div>
+	<comment-modal
+		v-if="showCommentModal"
+		@close-modal="showCommentModal = false"
+		:tweet="tweet"
+	></comment-modal>
 </template>
 
 <script setup>
 import moment from 'moment';
+import { ref } from 'vue';
+import CommentModal from './CommentModal.vue';
+
 defineProps({
 	currentUser: {
 		type: Object,
@@ -64,6 +79,8 @@ defineProps({
 		required: true,
 	},
 });
+
+const showCommentModal = ref(false);
 </script>
 
 <style lang="scss" scoped></style>

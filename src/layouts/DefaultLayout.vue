@@ -39,6 +39,7 @@
 				<!-- tweet button -->
 				<div class="w-full xl:pr-3 flex justify-center">
 					<button
+						@click="showTweetModal = true"
 						class="mt-3 bg-primary text-white xl:w-full w-12 h-12 rounded-full hover:bg-dark"
 					>
 						<span class="hidden xl:block">트윗</span>
@@ -98,7 +99,9 @@
 				/>
 				<div class="ml-2">
 					<div class="font-bold text-sm">{{ currentUser.email }}</div>
-					<div class="text-left text-sm text-gray-500">@test</div>
+					<div class="text-left text-sm text-gray-500">
+						@{{ currentUser.username }}
+					</div>
 				</div>
 				<font-awesome-icon
 					icon="check"
@@ -109,13 +112,20 @@
 				class="p-3 hover:bg-gray-50 w-full text-left text-sm"
 				@click="onLogout"
 			>
-				@alwns28 계정에서 로그아웃
+				@{{ currentUser.username }} 계정에서 로그아웃
 			</button>
 		</div>
+
+		<!-- tweet modal popup -->
+		<tweet-modal
+			v-if="showTweetModal"
+			@close-modal="showTweetModal = false"
+		></tweet-modal>
 	</div>
 </template>
 
 <script setup>
+import TweetModal from '../components/TweetModal.vue';
 import { ref, onBeforeMount, computed } from 'vue';
 import router from '../router';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
@@ -132,6 +142,7 @@ onBeforeMount(() => {
 });
 
 const showProfileDropDown = ref(false);
+const showTweetModal = ref(false);
 
 const onLogout = async () => {
 	await signOut(auth);

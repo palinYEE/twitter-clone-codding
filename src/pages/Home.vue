@@ -53,15 +53,14 @@ import { ref, computed, onBeforeMount } from 'vue';
 import store from '../store';
 import {
 	doc,
-	addDoc,
 	collection,
-	setDoc,
 	onSnapshot,
 	query,
 	orderBy,
 	getDoc,
 } from 'firebase/firestore';
 import { db } from '../firebase';
+import addTweet from '../utils/addTweet';
 
 const tweets = ref([]);
 onBeforeMount(() => {
@@ -99,24 +98,7 @@ const getUserInfo = async tweet => {
 const tweetBody = ref('');
 const onAddTweet = async () => {
 	try {
-		const data = collection(db, `tweets`);
-		const inputData = await addDoc(data, {
-			tweet_body: tweetBody.value,
-			uid: currentUser.value.uid,
-			created_at: Date.now(),
-			num_comments: 0,
-			num_retweets: 0,
-			num_likes: 0,
-		});
-
-		await setDoc(
-			doc(db, `tweets/${inputData.id}`),
-			{
-				id: inputData.id,
-			},
-			{ merge: true },
-		);
-
+		await addTweet(tweetBody.value, currentUser.value);
 		tweetBody.value = '';
 	} catch (error) {
 		console.log('on add tweet error on homepage: ', error.message);
