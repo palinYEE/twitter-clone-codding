@@ -31,8 +31,19 @@
 					></font-awesome-icon>
 					<span class="ml-1 text-sm">{{ tweet.num_comments }}</span>
 				</div>
-				<!-- tweet button -->
-				<div class="text-gray-500 hover:text-green-500">
+				<!-- retweet button -->
+				<div
+					v-if="!tweet.isRetweeted"
+					class="text-gray-500 hover:text-green-500"
+					@click="handleRetweet(tweet)"
+				>
+					<font-awesome-icon
+						:icon="['fas', 'retweet']"
+						class="fa-fw hover:bg-green-50 rounded-full p-2"
+					></font-awesome-icon>
+					<span class="ml-1 text-sm">{{ tweet.num_retweets }}</span>
+				</div>
+				<div v-else class="text-green-400" @click="handleRetweet(tweet)">
 					<font-awesome-icon
 						:icon="['fas', 'retweet']"
 						class="fa-fw hover:bg-green-50 rounded-full p-2"
@@ -40,7 +51,18 @@
 					<span class="ml-1 text-sm">{{ tweet.num_retweets }}</span>
 				</div>
 				<!-- like button -->
-				<div class="text-gray-500 hover:text-red-500">
+				<div
+					v-if="!tweet.isLiked"
+					class="text-gray-500 hover:text-red-500"
+					@click="handleLike(tweet)"
+				>
+					<font-awesome-icon
+						:icon="['fas', 'heart']"
+						class="fa-fw hover:bg-red-50 rounded-full p-2"
+					></font-awesome-icon>
+					<span class="ml-1 text-sm">{{ tweet.num_likes }}</span>
+				</div>
+				<div v-else class="text-red-400" @click="handleLike(tweet)">
 					<font-awesome-icon
 						:icon="['fas', 'heart']"
 						class="fa-fw hover:bg-red-50 rounded-full p-2"
@@ -68,6 +90,8 @@
 import moment from 'moment';
 import { ref } from 'vue';
 import CommentModal from './CommentModal.vue';
+import handleRetweet from '../utils/handleRetweet';
+import handleLike from '../utils/handleLike';
 
 defineProps({
 	currentUser: {

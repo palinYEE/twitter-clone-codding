@@ -51,16 +51,10 @@ import Trands from '../components/Trends.vue';
 import Tweet from '../components/Tweet.vue';
 import { ref, computed, onBeforeMount } from 'vue';
 import store from '../store';
-import {
-	doc,
-	collection,
-	onSnapshot,
-	query,
-	orderBy,
-	getDoc,
-} from 'firebase/firestore';
+import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
 import { db } from '../firebase';
 import addTweet from '../utils/addTweet';
+import getTweetInfo from '../utils/getTweetInfo';
 
 const tweets = ref([]);
 onBeforeMount(() => {
@@ -69,7 +63,7 @@ onBeforeMount(() => {
 		async snapshot => {
 			let snapshotData = snapshot.docChanges();
 			await snapshotData.forEach(async change => {
-				let tweet = await getUserInfo(change.doc.data());
+				let tweet = await getTweetInfo(change.doc.data(), currentUser.value);
 				console.log(tweet);
 				if (change.type === 'added') {
 					tweets.value.splice(change.newIndex, 0, tweet);
@@ -83,18 +77,6 @@ onBeforeMount(() => {
 	);
 });
 
-const getUserInfo = async tweet => {
-	const userData = await getDoc(doc(db, 'users', tweet.uid));
-
-	tweet = {
-		...tweet,
-		profile_image_url: userData.data().profile_image_url,
-		email: userData.data().email,
-		username: userData.data().username,
-	};
-
-	return tweet;
-};
 const tweetBody = ref('');
 const onAddTweet = async () => {
 	try {
