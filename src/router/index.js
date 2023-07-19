@@ -5,6 +5,7 @@ import Messages from '../pages/Messages.vue';
 import Profile from '../pages/Profile.vue';
 import Login from '../pages/Login.vue';
 import Register from '../pages/Register.vue';
+import Tweet from '../pages/Tweet.vue';
 import store from '../store';
 
 const routes = [
@@ -105,6 +106,16 @@ const routes = [
 		},
 	},
 	{
+		path: '/tweet/:id',
+		name: 'tweet',
+		component: Tweet,
+		meta: {
+			isMenu: false,
+			layout: 'DefaultLayout',
+			requireAuth: true,
+		},
+	},
+	{
 		path: '/register',
 		name: 'register',
 		icon: ['fas', 'dove'],
@@ -135,7 +146,6 @@ router.beforeEach((to, from, next) => {
 	const currentUser = store.state.user;
 	const requireAuth = to.matched.some(record => record.meta.requireAuth);
 	// not authenticated
-	console.log(currentUser, requireAuth);
 	if (requireAuth && !currentUser) next({ name: 'login' });
 	// authenticated
 	else next();

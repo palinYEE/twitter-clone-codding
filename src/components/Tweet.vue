@@ -17,7 +17,9 @@
 				}}</span>
 			</div>
 			<!-- 내용 -->
-			<div>{{ tweet.tweet_body }}</div>
+			<router-link :to="`/tweet/${tweet.id}`">{{
+				tweet.tweet_body
+			}}</router-link>
 			<!-- 아이콘들 -->
 			<div class="flex justify-between">
 				<!-- comment button -->

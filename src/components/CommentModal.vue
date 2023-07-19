@@ -116,15 +116,9 @@
 import { ref, computed } from 'vue';
 import store from '../store';
 import moment from 'moment';
-import {
-	collection,
-	addDoc,
-	setDoc,
-	doc,
-	updateDoc,
-	increment,
-} from 'firebase/firestore';
+import { setDoc, doc, updateDoc, increment } from 'firebase/firestore';
 import { db } from '../firebase';
+import { v4 as uuidv4 } from 'uuid';
 
 const emit = defineEmits(['close-modal']);
 const props = defineProps({
@@ -138,20 +132,15 @@ const tweetBody = ref('');
 const currentUser = computed(() => store.state.user);
 const onCommentTweet = async () => {
 	try {
-		const data = collection(db, 'comments');
-		const inputData = await addDoc(data, {
+		let uniqueId = uuidv4();
+		const data = doc(db, 'comments', uniqueId);
+		await setDoc(data, {
+			id: uniqueId,
 			from_tweet_id: props.tweet.id,
 			comment_tweet_body: tweetBody.value,
 			uid: currentUser.value.uid,
 			created_at: Date.now(),
 		});
-		await setDoc(
-			doc(db, `comments/${inputData.id}`),
-			{
-				id: inputData.id,
-			},
-			{ merge: true },
-		);
 
 		await updateDoc(doc(db, `tweets/${props.tweet.id}`), {
 			num_comments: increment(1),
