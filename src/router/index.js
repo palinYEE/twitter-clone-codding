@@ -94,6 +94,15 @@ const routes = [
 		},
 	},
 	{
+		path: '/profile/:id',
+		component: Profile,
+		meta: {
+			isMenu: false,
+			layout: 'DefaultLayout',
+			requireAuth: true,
+		},
+	},
+	{
 		path: '/',
 		name: 'more',
 		title: '더보기',

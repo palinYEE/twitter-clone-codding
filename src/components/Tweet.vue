@@ -2,10 +2,12 @@
 	<div
 		class="flex px-3 py-3 border-b border-gray-100 hover:bg-gray-50 cursor-pointer"
 	>
-		<img
-			:src="currentUser.profile_image_url"
-			class="w-10 h-10 rounded-full hover:opacity-80 cursor-pointer"
-		/>
+		<router-link :to="`/profile/${tweet.uid}`">
+			<img
+				:src="currentUser.profile_image_url"
+				class="w-10 h-10 rounded-full hover:opacity-80 cursor-pointer"
+			/>
+		</router-link>
 		<div class="ml-3 flex-1 flex flex-col space-y-1">
 			<!-- 제목 -->
 			<div class="text-sm space-x-1">
