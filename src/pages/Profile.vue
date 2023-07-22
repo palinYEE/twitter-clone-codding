@@ -16,20 +16,26 @@
 				</div>
 			</div>
 			<!-- background image -->
-			<div class="bg-gray-300 h-40 relative flex-none">
+			<div class="bg-gray-300 h-48 relative flex-none">
+				<img
+					:src="profileUser.background_image_url"
+					class="w-full h-48 object-cover"
+				/>
 				<!-- profile image -->
 				<div
 					class="w-28 h-28 border-4 border-white bg-gray-100 rounded-full absolute -bottom-14 left-2"
 				>
 					<img
 						:src="profileUser.profile_image_url"
-						class="rounded-full opacity-90 hover:opacity-100 cursor-pointer"
+						class="rounded-full opacity-90 hover:opacity-100 cursor-pointer w-full h-full"
 					/>
 				</div>
 			</div>
 			<!-- profile edit button -->
-			<div class="text-right mt-2 mr-2">
+			<div class="text-right mt-2 mr-2 h-14">
 				<button
+					v-if="currentUser.id === profileUser.id"
+					@click="showProfileEditModal = true"
 					class="text-sm border border-primary text-primary px-3 py-2 hover:bg-blue-50 font-bold rounded-full"
 				>
 					프로필 수정
@@ -108,12 +114,17 @@
 		</div>
 		<!-- trend section -->
 		<trends />
+		<profile-edit-modal
+			v-if="showProfileEditModal"
+			@close-modal="showProfileEditModal = false"
+		></profile-edit-modal>
 	</div>
 </template>
 
 <script setup>
 import Trends from '../components/Trends.vue';
 import Tweet from '../components/Tweet.vue';
+import ProfileEditModal from '../components/ProfileEditModal.vue';
 import store from '../store';
 import { computed, ref, onBeforeMount } from 'vue';
 import { db } from '../firebase';
@@ -138,9 +149,10 @@ const retweets = ref([]);
 const liketweets = ref([]);
 const currentTab = ref('tweet');
 const route = useRoute();
+const showProfileEditModal = ref(false);
 
 onBeforeMount(() => {
-	const profileUID = route.params.id ?? currentUser.value.id;
+	const profileUID = route.params.uid ?? currentUser.value.uid;
 
 	onSnapshot(doc(collection(db, 'users'), profileUID), snapshot => {
 		// store.commit('SET_USER', snapshot.data());
