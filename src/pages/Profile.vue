@@ -33,13 +33,39 @@
 			</div>
 			<!-- profile edit button -->
 			<div class="text-right mt-2 mr-2 h-14">
-				<button
-					v-if="currentUser.id === profileUser.id"
-					@click="showProfileEditModal = true"
-					class="text-sm border border-primary text-primary px-3 py-2 hover:bg-blue-50 font-bold rounded-full"
-				>
-					프로필 수정
-				</button>
+				<div v-if="currentUser.uid === profileUser.uid">
+					<button
+						@click="showProfileEditModal = true"
+						class="text-sm border border-primary text-primary px-3 py-2 hover:bg-blue-50 font-bold rounded-full"
+					>
+						프로필 수정
+					</button>
+				</div>
+				<div v-else>
+					<div
+						v-if="currentUser.followings.includes(profileUser.uid)"
+						class="relative"
+						@click="onUnfollow"
+					>
+						<button
+							class="absolute w-24 right-0 text-sm bg-primary text-white px-3 py-2 hover:opacity-0 font-bold rounded-full"
+						>
+							팔로윙
+						</button>
+						<button
+							class="absolute w-24 right-0 text-sm bg-red-400 text-white px-3 py-2 opacity-0 hover:opacity-100 font-bold rounded-full"
+						>
+							언팔로우
+						</button>
+					</div>
+					<div v-else @click="onFollow">
+						<button
+							class="w-24 text-sm border border-primary text-primary px-3 py-2 hover:bg-primary hover:text-white font-bold rounded-full"
+						>
+							팔로우
+						</button>
+					</div>
+				</div>
 			</div>
 			<!-- user info -->
 			<div class="mx-3 mt-2">
@@ -137,6 +163,9 @@ import {
 	orderBy,
 	doc,
 	getDoc,
+	arrayUnion,
+	updateDoc,
+	arrayRemove,
 } from 'firebase/firestore';
 import moment from 'moment';
 import { useRoute } from 'vue-router';
@@ -152,7 +181,7 @@ const route = useRoute();
 const showProfileEditModal = ref(false);
 
 onBeforeMount(() => {
-	const profileUID = route.params.uid ?? currentUser.value.uid;
+	const profileUID = route.params.id ?? currentUser.value.uid;
 
 	onSnapshot(doc(collection(db, 'users'), profileUID), snapshot => {
 		// store.commit('SET_USER', snapshot.data());
@@ -228,6 +257,30 @@ onBeforeMount(() => {
 		},
 	);
 });
+
+const onUnfollow = async () => {
+	await updateDoc(doc(db, `users/${currentUser.value.uid}`), {
+		followings: arrayRemove(profileUser.value.uid),
+	});
+
+	await updateDoc(doc(db, `users/${profileUser.value.uid}`), {
+		followers: arrayRemove(currentUser.value.uid),
+	});
+
+	store.commit('SET_UNFOLLOW', profileUser.value.uid);
+};
+
+const onFollow = async () => {
+	await updateDoc(doc(db, `users/${currentUser.value.uid}`), {
+		followings: arrayUnion(profileUser.value.uid),
+	});
+
+	await updateDoc(doc(db, `users/${profileUser.value.uid}`), {
+		followers: arrayUnion(currentUser.value.uid),
+	});
+
+	store.commit('SET_FOLLOW', profileUser.value.uid);
+};
 </script>
 
 <style lang="scss" scoped></style>

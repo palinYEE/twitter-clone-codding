@@ -23,7 +23,7 @@ export default async (tweet, currentUser) => {
 	const retweetSnapshot = await getDocs(
 		query(
 			retweetCollection,
-			where('from_tweet_id', '==', tweet.id),
+			where('from_tweet_id', '==', tweet.uid),
 			where('uid', '==', currentUser.uid),
 		),
 	);
@@ -38,7 +38,7 @@ export default async (tweet, currentUser) => {
 	const likeSnapshot = await getDocs(
 		query(
 			likeCollection,
-			where('from_tweet_id', '==', tweet.id),
+			where('from_tweet_id', '==', tweet.uid),
 			where('uid', '==', currentUser.uid),
 		),
 	);
