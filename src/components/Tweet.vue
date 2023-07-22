@@ -10,13 +10,24 @@
 		</router-link>
 		<div class="ml-3 flex-1 flex flex-col space-y-1">
 			<!-- 제목 -->
-			<div class="text-sm space-x-1">
-				<span class="font-bold">{{ tweet.email }}</span>
-				<span class="text-gray-500 text-xs">@{{ tweet.username }}</span>
-				<span>·</span>
-				<span class="text-gray-500 text-xs">{{
-					moment(tweet.created_at).fromNow()
-				}}</span>
+			<div class="text-sm flex justify-between items-center">
+				<div class="space-x-1">
+					<span class="font-bold">{{ tweet.email }}</span>
+					<span class="text-gray-500 text-xs">@{{ tweet.username }}</span>
+					<span>·</span>
+					<span class="text-gray-500 text-xs">{{
+						moment(tweet.created_at).fromNow()
+					}}</span>
+				</div>
+				<button
+					v-if="currentUser.uid === tweet.uid"
+					@click="onDeleteTweet(tweet)"
+				>
+					<font-awesome-icon
+						icon="fa-trash"
+						class="text-red-400 rounded-full hover:bg-red-50"
+					></font-awesome-icon>
+				</button>
 			</div>
 			<!-- 내용 -->
 			<router-link :to="`/tweet/${tweet.id}`">{{
@@ -96,6 +107,17 @@ import { ref } from 'vue';
 import CommentModal from './CommentModal.vue';
 import handleRetweet from '../utils/handleRetweet';
 import handleLike from '../utils/handleLike';
+import {
+	collection,
+	deleteDoc,
+	doc,
+	getDocs,
+	increment,
+	query,
+	updateDoc,
+	where,
+} from 'firebase/firestore';
+import { db } from '../firebase';
 
 defineProps({
 	currentUser: {
@@ -109,6 +131,31 @@ defineProps({
 });
 
 const showCommentModal = ref(false);
+
+const onDeleteTweet = async tweet => {
+	if (!confirm('정말로 트윗을 삭제하시겠습니까?')) return;
+	// delete tweet
+	await deleteDoc(doc(db, 'tweets', tweet.id));
+	// delete comments
+	const commentSnapshot = await getDocs(
+		query(collection(db, 'comments'), where('from_tweet_id', '==', tweet.id)),
+	);
+	commentSnapshot.docs.forEach(async docData => await deleteDoc(docData.ref));
+	// delete likes
+	const likeSnapshot = await getDocs(
+		query(collection(db, 'likes'), where('from_tweet_id', '==', tweet.id)),
+	);
+	likeSnapshot.docs.forEach(async docData => await deleteDoc(docData.ref));
+	// delete retweets
+	const retweetSnapshot = await getDocs(
+		query(collection(db, 'retweets'), where('from_tweet_id', '==', tweet.id)),
+	);
+	retweetSnapshot.docs.forEach(async docData => await deleteDoc(docData.ref));
+	// user collection - num_tweets (-1)
+	await updateDoc(doc(db, `users/${tweet.uid}`), {
+		num_tweets: increment(-1),
+	});
+};
 </script>
 
 <style lang="scss" scoped></style>
